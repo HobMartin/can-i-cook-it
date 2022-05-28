@@ -1,9 +1,24 @@
-/files
-/images
+files/
+images/
 
-/testset
-/working
-/archive
-/__pycache__
-/logs
-/test
+testset/
+working/
+archive/
+__pycache__/
+logs/
+test/
+
+node_modules/
+.expo/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# macOS
+.DS_Store
