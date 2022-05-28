@@ -1,0 +1,34 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+numpy = "*"
+pandas = "*"
+pathlib = "*"
+matplotlib = "*"
+seaborn = "*"
+sklearn = "*"
+tensorflow = "*"
+opencv-python = "*"
+pillow = "*"
+fastapi = {extras = ["all"], version = "*"}
+black = "*"
+aiofile = "*"
+tensorflow-hub = "*"
+pydot = "*"
+graphviz = "*"
+
+[dev-packages]
+ipykernel = "*"
+black = "*"
+
+[requires]
+python_version = "3.9"
+
+[scripts]
+local-server = "uvicorn main:app --reload"
+
+[pipenv]
+allow_prereleases = true
