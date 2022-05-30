@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    image: can-i-cook-it
+    container_name: can-i-cook-it-server
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./server:/server
+    ports:
+      - "8080:8080"
