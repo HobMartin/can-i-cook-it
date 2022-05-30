@@ -1,7 +1,5 @@
-from fastapi import FastAPI, UploadFile
-from PIL import Image
-import requests
-from predict import predict
+from fastapi import FastAPI
+from app.predict import predict
 
 app = FastAPI()
 
@@ -18,6 +16,5 @@ async def root():
 
 @app.post("/predict/")
 async def create_upload_file(file: str):
-    image = Image.open(requests.get(url, stream=True).raw)
-    result = predict_image(image)
+    result = predict_image(file)
     return {"food_name": result}
