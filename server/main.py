@@ -4,9 +4,7 @@ from predict import predict
 
 app = FastAPI()
 
-origins = [
-    "*"
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
