@@ -28,7 +28,7 @@ black = "*"
 python_version = "3.9"
 
 [scripts]
-local-server = "uvicorn main:app --reload"
+local-server = "uvicorn main:app --reload --host localhost --port 8000"
 
 [pipenv]
 allow_prereleases = true

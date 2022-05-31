@@ -1,16 +1,16 @@
-import { useStore } from "effector-react";
-import { Text, View, SafeAreaView } from "../../components/Themed";
-import { $user } from "../../state/user";
+import { Image } from "react-native";
+import { Cook_IL } from "../../assets/illustration";
+import { Text, SafeAreaView } from "../../components/Themed";
 import { homeScreenStyles } from "./styles";
 
 export default function HomeScreen({ navigation }: any) {
-  const currentUser = useStore($user);
   return (
     <SafeAreaView style={homeScreenStyles.container}>
-      <Text style={homeScreenStyles.title}>
-        {currentUser.email ? `Привіт, ${currentUser.email} ` : "Привіт "}
-        давай дізнаємось чи можеш ти це приготувати
-      </Text>
+      <Image
+        source={Cook_IL}
+        style={{ height: 350, width: "100%", resizeMode: "stretch" }}
+      />
+      <Text style={homeScreenStyles.title}>Давай щось приготуємо!</Text>
     </SafeAreaView>
   );
 }

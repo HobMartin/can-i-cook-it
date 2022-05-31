@@ -17,6 +17,5 @@ fxLoadReceipt.use(async (params) => {
     sourceUrl: result.sourceUrl,
     extendedIngredients: result.extendedIngredients,
   };
-  console.log("1");
   updateReceipt(receiptData);
 });

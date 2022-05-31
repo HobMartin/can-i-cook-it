@@ -41,10 +41,9 @@ export const receiptScreenStyles = StyleSheet.create({
   },
   ingredient: {
     alignItems: "center",
-    flexDirection: "row",
-    width: "100%",
-    margin: 20,
+    marginHorizontal: 20,
   },
+
   ingredientInfo: {
     height: 105,
     padding: 20,
@@ -59,5 +58,21 @@ export const receiptScreenStyles = StyleSheet.create({
   ingredientText: {
     fontSize: 14,
     textAlign: "center",
+  },
+  receiptInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 20,
+  },
+  timeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  urlSource: {
+    backgroundColor: Colors.light.tabIconDefault,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
   },
 });

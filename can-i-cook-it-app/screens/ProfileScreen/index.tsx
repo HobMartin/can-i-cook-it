@@ -40,7 +40,7 @@ export default function ProfileScreen({ navigation }: any) {
         />
         <View style={profileScreenStyles.userInfo}>
           <Text style={profileScreenStyles.userInfoName}>
-            {currentUser.displayName ?? "TEST"}
+            {currentUser.displayName ?? ""}
           </Text>
           <Text style={profileScreenStyles.userInfoEmail}>
             {currentUser.email}

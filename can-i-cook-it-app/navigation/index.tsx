@@ -29,6 +29,7 @@ import { Text } from "../components/Themed";
 import ProfileScreen from "../screens/ProfileScreen";
 import PredictScreen from "../screens/PredictScreen";
 import ShoppingListScreen from "../screens/ShoppingListScreen";
+import PredictionImageScreen from "../screens/PredictionImageScreen";
 
 export default function Navigation({
   colorScheme,
@@ -119,33 +120,37 @@ function BottomTabNavigator() {
         })}
       />
       <BottomTab.Screen
-        name="Покупоки"
+        name="ShopsScreens"
         component={ShoppingListScreen}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="list" color={color} />,
+          title: "Покупки",
         }}
       />
       <BottomTab.Screen
-        name="Визначення"
-        component={PredictScreen}
+        name="PredictionScreens"
+        component={PredictionNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="camera" color={color} />,
+          title: "Визначення",
         }}
       />
       <BottomTab.Screen
-        name="Рецепти"
+        name="ReceiptsScreens"
         component={ReceiptNavigator}
         options={{
           tabBarIcon: ({ color }) => (
             <TabBarIcon name="receipt" color={color} />
           ),
+          title: "Рецепти",
         }}
       />
       <BottomTab.Screen
-        name="Профіль"
+        name="Profile"
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="person" color={color} />,
+          title: "Профіль",
         }}
       />
     </BottomTab.Navigator>
@@ -174,6 +179,23 @@ function ReceiptNavigator() {
       <ReceiptStack.Screen name="Receipts" component={ReceiptsScreen} />
       <ReceiptStack.Screen name="Receipt" component={ReceiptScreen} />
     </ReceiptStack.Navigator>
+  );
+}
+
+const PredictionStack = createStackNavigator();
+
+function PredictionNavigator() {
+  return (
+    <PredictionStack.Navigator
+      initialRouteName="Prediction"
+      screenOptions={{ headerShown: false }}
+    >
+      <PredictionStack.Screen name="Prediction" component={PredictScreen} />
+      <PredictionStack.Screen
+        name="PredictionImage"
+        component={PredictionImageScreen}
+      />
+    </PredictionStack.Navigator>
   );
 }
 

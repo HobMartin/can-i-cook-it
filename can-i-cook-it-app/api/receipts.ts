@@ -17,7 +17,6 @@ export const getReceipts = async (params: getReceiptParams) => {
 
 export const getSearchSpoonReceipts = async (params: getReceiptParams) => {
   const queryParams = convertToSearchParams({ ...spoonBasicParams, ...params });
-  console.log(queryParams);
 
   const response = await axios.get(
     `${SPOON_BASE_URL}/complexSearch?${queryParams.toString()}`
@@ -49,7 +48,7 @@ export const getSpoonReceipt = async (id: string) => {
 export const getSimilarSpoonReceipt = async (id: string) => {
   const queryParams = convertToSearchParams(spoonBasicParams);
   const response = await axios.get(
-    `${BASE_URL}/${id}/similar?${queryParams.toString()}`
+    `${SPOON_BASE_URL}/${id}/similar?${queryParams.toString()}`
   );
   const data = await response.data;
   return data;

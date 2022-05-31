@@ -9,7 +9,6 @@ export const fxLoadReceipts = createEffect<getReceiptParams, any>();
 
 fxLoadReceipts.use(async (params) => {
   const result = await getSearchSpoonReceipts(params);
-  console.log(result);
 
   const receiptData = result.results.map((receipt: any) => ({
     id: receipt.id.toString(),

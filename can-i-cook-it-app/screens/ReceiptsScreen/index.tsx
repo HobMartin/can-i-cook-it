@@ -15,15 +15,18 @@ import { useDebounce } from "../../hooks/useDebounce";
 import Colors from "../../constants/Colors";
 import { Favorite_IL, Search_IL } from "../../assets/illustration";
 
-export default function ReceiptsScreen({ navigation }: any) {
+export default function ReceiptsScreen({ route, navigation }: any) {
+  const name = route?.params?.name;
   const receipts = useStore($receipts);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(name ?? "");
   const searchValue = useDebounce<string>(search, 500);
-  console.log(receipts);
 
   useEffect(() => {
     fxLoadReceipts({ query: searchValue });
-  }, [searchValue]);
+    if (name) {
+      setSearch(name);
+    }
+  }, [searchValue, name]);
 
   const renderItem = ({ item }: any) => {
     return (
