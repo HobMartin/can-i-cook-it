@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://230a-194-44-90-74.eu.ngrok.io";
+const API_BASE_URL = "https://0c89-194-44-90-74.eu.ngrok.io";
 
 export const predictImage = async (image: string) => {
   try {

@@ -9,7 +9,9 @@ export const receiptScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.3)",
-    justifyContent: "center",
+    justifyContent: "space-between",
+    paddingTop: 150,
+    paddingBottom: 20,
     alignItems: "center",
   },
   title: {
@@ -54,6 +56,11 @@ export const receiptScreenStyles = StyleSheet.create({
   ingredientTitle: {
     fontSize: 16,
     fontWeight: "bold",
+  },
+  favorite: {
+    alignSelf: "flex-end",
+    backgroundColor: "transparent",
+    marginRight: 20,
   },
   ingredientText: {
     fontSize: 14,
