@@ -16,6 +16,7 @@ import Colors from "../../constants/Colors";
 import { Favorite_IL, Search_IL } from "../../assets/illustration";
 import { $favoritesReceipts, fxGetFavorites } from "../../state/favorites";
 import { $user } from "../../state/user";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function ReceiptsScreen({ route, navigation }: any) {
   const name = route?.params?.name;
@@ -40,7 +41,7 @@ export default function ReceiptsScreen({ route, navigation }: any) {
           navigation.navigate("Receipt", { receiptId: item.id ?? item.receipt })
         }
       >
-        <ReceiptCard title={item?.title ?? item?.name} image={item?.image} />
+        <ReceiptCard title={item?.title} image={item?.image} />
       </TouchableOpacity>
     );
   };

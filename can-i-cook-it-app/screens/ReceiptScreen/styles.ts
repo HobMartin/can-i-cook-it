@@ -82,4 +82,14 @@ export const receiptScreenStyles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
   },
+  listButtonCreate: {
+    paddingHorizontal: 30,
+    alignItems: "center",
+  },
+  createListButton: {
+    paddingVertical: 20,
+    paddingHorizontal: 25,
+    textAlign: "center",
+    borderRadius: 25,
+  },
 });

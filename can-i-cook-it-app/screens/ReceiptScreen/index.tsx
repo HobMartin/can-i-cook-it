@@ -5,6 +5,7 @@ import {
   View,
   SafeAreaView,
   useThemeColor,
+  Button,
 } from "../../components/Themed";
 import {
   ActivityIndicator,
@@ -20,7 +21,7 @@ import Colors from "../../constants/Colors";
 import { buildImageUrl, capitalizeFirstLetter } from "./helper";
 import { Ionicons } from "@expo/vector-icons";
 import { openBrowserAsync } from "expo-web-browser";
-import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { $user } from "../../state/user";
 import {
@@ -72,7 +73,26 @@ export default function ReceiptScreen({ route, navigation }: any) {
       receipt: receiptId,
       doc: docRef.id,
       image: receipt.image,
-      name: receipt.name,
+      title: receipt.name,
+    });
+  };
+
+  const handleCreateList = async () => {
+    const docRef = doc(
+      db,
+      "ShoppingLists",
+      `${currentUser.email ?? currentUser.uid}|${new Date().toISOString()}`
+    );
+    const list = receipt.extendedIngredients.map((ingredient: any) => ({
+      name: capitalizeFirstLetter(ingredient.name),
+      amount: `${ingredient.amount} ${ingredient.measures.metric.unitLong}`,
+    }));
+
+    setDoc(docRef, {
+      id: new Date().toISOString(),
+      list,
+    }).then(() => {
+      navigation.navigate("ShopsScreens");
     });
   };
 
@@ -143,6 +163,13 @@ export default function ReceiptScreen({ route, navigation }: any) {
           renderItem={renderItem}
           keyExtractor={(item, index) => item.id + index}
         />
+        <View style={receiptScreenStyles.listButtonCreate}>
+          <Button
+            onPress={handleCreateList}
+            style={receiptScreenStyles.createListButton}
+            text="Створити список покупок"
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

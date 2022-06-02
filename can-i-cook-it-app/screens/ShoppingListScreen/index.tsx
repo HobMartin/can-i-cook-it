@@ -1,10 +1,54 @@
 import { View, Text } from "../../components/Themed";
-import React from "react";
+import React, { useEffect } from "react";
+import { useStore } from "effector-react";
+import { $user } from "../../state/user";
+import { $shoppingList, fxLoadShoppingList } from "../../state/shoppingList";
+import { shoppingListScreenStyles } from "./styles";
+import { FlatList } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function ShoppingListScreen() {
+  const currentUser = useStore($user);
+  const shoppingList = useStore($shoppingList);
+
+  useFocusEffect(() => {
+    fxLoadShoppingList(currentUser);
+  });
+
+  const renderSubItem = ({ item }: any) => {
+    return (
+      <View style={shoppingListScreenStyles.subItem}>
+        <Text style={shoppingListScreenStyles.subItemName}>{item.name}</Text>
+        <Text style={shoppingListScreenStyles.subItemAmount}>
+          {item.amount}
+        </Text>
+      </View>
+    );
+  };
+
+  const renderItem = ({ item }: any) => {
+    return (
+      <View style={shoppingListScreenStyles.listItem}>
+        <FlatList
+          data={item.list}
+          horizontal={true}
+          renderItem={renderSubItem}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      </View>
+    );
+  };
+
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>В розробці:)</Text>
+    <View style={shoppingListScreenStyles.container}>
+      <Text style={shoppingListScreenStyles.pageTitle}>Список покупок</Text>
+      <View style={shoppingListScreenStyles.listItemContainer}>
+        <FlatList
+          data={shoppingList}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      </View>
     </View>
   );
 }

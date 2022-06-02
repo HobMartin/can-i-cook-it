@@ -6,7 +6,7 @@ import { db } from "../../firebase";
 interface IFavorites {
   receipt: string;
   image: string;
-  name: string;
+  title: string;
   doc: string;
 }
 
@@ -36,7 +36,7 @@ fxGetFavorites.use(async (params) => {
     updateFavoritesReceipt({
       receipt: doc.data().receiptId,
       image: doc.data().image,
-      name: doc.data().name,
+      title: doc.data().name,
       doc: doc.id,
     });
   });
