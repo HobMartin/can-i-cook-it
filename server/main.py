@@ -32,5 +32,8 @@ class Image(BaseModel):
 
 @app.post("/predict/")
 async def create_upload_file(file: Image):
-    result = predict_image(file.file)
-    return {"food_name": result}
+    try:
+        result = predict_image(file.file)
+        return result
+    except Exception as e:
+        return {"error": str(e)}

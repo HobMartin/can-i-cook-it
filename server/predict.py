@@ -1,5 +1,4 @@
 from tensorflow import keras
-from keras.preprocessing import image
 import json
 from pathlib import Path
 import numpy as np
@@ -24,5 +23,6 @@ def predict(image_path):
     input_arr = np.expand_dims(x, axis=0)
     input_arr = keras.applications.mobilenet_v2.preprocess_input(input_arr)
     predictions = model.predict(input_arr)
+    model_score = round(max(predictions[0]) * 100, 2)
     predictions = predictions.argmax(axis=1)
-    return data[str(predictions[0])]
+    return {"food_name": data[str(predictions[0])], "model_score": model_score}

@@ -19,6 +19,7 @@ aiofile = "*"
 tensorflow-hub = "*"
 pydot = "*"
 graphviz = "*"
+tflite-runtime = "*"
 
 [dev-packages]
 ipykernel = "*"
