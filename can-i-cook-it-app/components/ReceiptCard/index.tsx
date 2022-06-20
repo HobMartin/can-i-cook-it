@@ -1,5 +1,6 @@
 import React from "react";
 import { Image, ImageBackground } from "react-native";
+import { useTranslation as t } from "../../hooks/useTranslate";
 import { View, Text } from "../Themed";
 import { receiptCardStyles } from "./styles";
 
@@ -18,7 +19,7 @@ export function ReceiptCard({ title, image }: ReceiptCardProps) {
         source={{ uri: image }}
       >
         <View style={receiptCardStyles.titleWrapper}>
-          <Text style={receiptCardStyles.title}>{title}</Text>
+          <Text style={receiptCardStyles.title}>{t(title)}</Text>
         </View>
       </ImageBackground>
     </View>

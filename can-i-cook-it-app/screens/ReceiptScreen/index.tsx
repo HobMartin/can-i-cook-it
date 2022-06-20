@@ -85,7 +85,7 @@ export default function ReceiptScreen({ route, navigation }: any) {
     );
     const list = receipt.extendedIngredients.map((ingredient: any) => ({
       name: capitalizeFirstLetter(ingredient.name),
-      amount: `${ingredient.amount} ${ingredient.measures.metric.unitLong}`,
+      amount: `${ingredient.amount} ${ingredient.unit}`,
     }));
 
     setDoc(docRef, {
@@ -107,9 +107,7 @@ export default function ReceiptScreen({ route, navigation }: any) {
           <Text style={receiptScreenStyles.ingredientTitle}>
             {capitalizeFirstLetter(item.name)}
           </Text>
-          <Text style={receiptScreenStyles.ingredientText}>
-            {item.original}
-          </Text>
+          <Text style={receiptScreenStyles.ingredientText}>{item.text}</Text>
         </View>
       </View>
     );
