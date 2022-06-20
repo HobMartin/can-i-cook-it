@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
+import { getDatabase } from "firebase/database";
 import {
   getReactNativePersistence,
   initializeAuth,
@@ -22,6 +23,8 @@ const firebaseConfig = {
   messagingSenderId: "583313590399",
   appId: "1:583313590399:web:06db8a719a9005cb34174a",
   measurementId: "G-10564TM29L",
+  databaseURL:
+    "https://can-i-cook-it-default-rtdb.europe-west1.firebasedatabase.app/",
 };
 
 // Initialize Firebase
@@ -31,3 +34,4 @@ export const auth = initializeAuth(app, {
 });
 export const storage = getStorage(app);
 export const db = getFirestore(app);
+export const database = getDatabase(app);
