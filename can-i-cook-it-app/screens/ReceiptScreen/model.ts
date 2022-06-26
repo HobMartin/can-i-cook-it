@@ -10,14 +10,17 @@ fxLoadReceipt.use(async (params) => {
   const result = await getSpoonReceipt(params.id);
 
   const extendedIngredients = await Promise.all(
-    result.extendedIngredients.map(async (el: any) => ({
-      id: el.id,
-      name: await t(el.name),
-      amount: el.amount,
-      image: el.image,
-      unit: await t(el.measures.metric.unitLong),
-      text: await t(el.original),
-    }))
+    result.extendedIngredients.map(async (el: any) => {
+      console.log(el);
+      return {
+        id: el.id,
+        name: await t(el.name),
+        amount: el.amount,
+        image: el.image,
+        unit: await t(el.measures?.metric?.unitLong),
+        text: await t(el.original),
+      };
+    })
   );
   const receiptData = {
     id: result.id,

@@ -90,6 +90,7 @@ export default function ReceiptScreen({ route, navigation }: any) {
 
     setDoc(docRef, {
       id: new Date().toISOString(),
+      name: receipt.title,
       list,
     }).then(() => {
       navigation.navigate("ShopsScreens");

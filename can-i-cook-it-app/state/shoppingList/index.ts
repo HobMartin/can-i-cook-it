@@ -23,6 +23,7 @@ fxLoadShoppingList.use(async (params) => {
       updateShoppingList({
         id: doc.data().id,
         list: doc.data().list,
+        name: doc.data().name,
       });
     }
   });

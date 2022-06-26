@@ -12,7 +12,7 @@ type ThemeProps = {
 };
 
 type CustomButton = {
-  text: string;
+  text?: string;
   icon?: any;
 };
 

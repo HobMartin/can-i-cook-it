@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "can-i-cook-it-app",
-    "slug": "can-i-cook-it-app",
+    "name": "can-i-cook-it",
+    "slug": "can-i-cook-it",
+    "owner": "hobmartin",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,8 +16,19 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
+    "assetBundlePatterns": ["**/*"],
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#ffffff",
+          "sounds": [
+            "./assets/sound/push-sound.wav",
+            "./assets/sound/push-sound-another.wav"
+          ]
+        }
+      ]
     ],
     "ios": {
       "supportsTablet": true

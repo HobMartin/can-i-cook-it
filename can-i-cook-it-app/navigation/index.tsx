@@ -30,6 +30,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 import PredictScreen from "../screens/PredictScreen";
 import ShoppingListScreen from "../screens/ShoppingListScreen";
 import PredictionImageScreen from "../screens/PredictionImageScreen";
+import ShoppingListItemScreen from "../screens/ShopingListItemScreen";
 
 export default function Navigation({
   colorScheme,
@@ -91,7 +92,10 @@ function BottomTabNavigator() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
         tabBarInactiveTintColor: Colors[colorScheme].tabIconDefault,
-        tabBarStyle: { height: 60 },
+        tabBarLabelStyle: {
+          color: Colors[colorScheme].text,
+        },
+        tabBarStyle: { height: 65, paddingTop: 10, paddingBottom: 10 },
         headerTitleAlign: "center",
         headerShown: false,
       }}
@@ -102,6 +106,7 @@ function BottomTabNavigator() {
         options={({ navigation }) => ({
           title: "Головна",
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          headerShown: true,
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate("Modal")}
@@ -121,7 +126,7 @@ function BottomTabNavigator() {
       />
       <BottomTab.Screen
         name="ShopsScreens"
-        component={ShoppingListScreen}
+        component={ShoppingListNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="list" color={color} />,
           title: "Покупки",
@@ -196,6 +201,26 @@ function PredictionNavigator() {
         component={PredictionImageScreen}
       />
     </PredictionStack.Navigator>
+  );
+}
+
+const ShoppingListStack = createStackNavigator();
+
+function ShoppingListNavigator() {
+  return (
+    <ShoppingListStack.Navigator
+      initialRouteName="ShoppingLists"
+      screenOptions={{ headerShown: false }}
+    >
+      <ShoppingListStack.Screen
+        name="ShoppingLists"
+        component={ShoppingListScreen}
+      />
+      <ShoppingListStack.Screen
+        name="ShoppingList"
+        component={ShoppingListItemScreen}
+      />
+    </ShoppingListStack.Navigator>
   );
 }
 

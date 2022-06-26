@@ -92,17 +92,12 @@ export function Button(props: ButtonProps) {
       style={[{ borderColor, backgroundColor, flexDirection: "row" }, style]}
       {...otherProps}
     >
-      {icon && (
-        <Ionicons
-          name={icon}
-          size={24}
-          color="white"
-          style={{ marginRight: 10 }}
-        />
+      {icon && <Ionicons name={icon} size={24} color="white" />}
+      {!!text && (
+        <Text darkColor="#fff" lightColor="#fff" style={{ marginLeft: 10 }}>
+          {text}
+        </Text>
       )}
-      <Text darkColor="#fff" lightColor="#fff">
-        {text}
-      </Text>
     </DefaultTouchableOpacity>
   );
 }

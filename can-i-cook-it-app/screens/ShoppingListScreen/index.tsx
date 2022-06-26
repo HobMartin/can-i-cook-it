@@ -6,8 +6,9 @@ import { $shoppingList, fxLoadShoppingList } from "../../state/shoppingList";
 import { shoppingListScreenStyles } from "./styles";
 import { FlatList } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import { ShoppingList } from "./ShoppingList";
 
-export default function ShoppingListScreen() {
+export default function ShoppingListScreen({ navigation }: any) {
   const currentUser = useStore($user);
   const shoppingList = useStore($shoppingList);
 
@@ -43,11 +44,12 @@ export default function ShoppingListScreen() {
     <View style={shoppingListScreenStyles.container}>
       <Text style={shoppingListScreenStyles.pageTitle}>Список покупок</Text>
       <View style={shoppingListScreenStyles.listItemContainer}>
-        <FlatList
+        {/* <FlatList
           data={shoppingList}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
-        />
+        /> */}
+        <ShoppingList navigation={navigation} />
       </View>
     </View>
   );
