@@ -106,7 +106,6 @@ function BottomTabNavigator() {
         options={({ navigation }) => ({
           title: "Головна",
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-          headerShown: true,
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate("Modal")}

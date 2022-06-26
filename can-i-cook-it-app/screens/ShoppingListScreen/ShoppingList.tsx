@@ -27,7 +27,10 @@ export const ShoppingList: FC<ShoppingListProps> = ({ navigation }) => {
     return (
       <View>
         <TouchableOpacity onPress={() => handleItemPress(item)}>
-          <ShoppingListItem name={item.name} />
+          <ShoppingListItem
+            name={item.name}
+            isDone={item.list.every((el: any) => el.done)}
+          />
         </TouchableOpacity>
       </View>
     );

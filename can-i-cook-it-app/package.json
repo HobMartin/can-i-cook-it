@@ -44,6 +44,7 @@
     "formik": "^2.2.9",
     "google-translate-api": "^2.3.0",
     "google-translate-api-axios": "^9.0.1",
+    "lodash": "^4.17.21",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-native": "0.68.2",

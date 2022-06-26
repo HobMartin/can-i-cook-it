@@ -4,13 +4,20 @@ import { shoppingListItemStyles } from "./styles";
 
 interface ShoppingListItemProps {
   name: string;
+  isDone?: boolean;
 }
 
-export const ShoppingListItem: FC<ShoppingListItemProps> = ({ name }) => {
-  const color = useThemeColor({}, "tabIconSelected");
+export const ShoppingListItem: FC<ShoppingListItemProps> = ({
+  name,
+  isDone,
+}) => {
+  const color = useThemeColor({}, "buttonBackground");
   return (
     <View
-      style={{ ...shoppingListItemStyles.container, backgroundColor: color }}
+      style={{
+        ...shoppingListItemStyles.container,
+        backgroundColor: isDone ? "#ccc" : color,
+      }}
     >
       <Text>{name}</Text>
     </View>

@@ -5,6 +5,7 @@ export const homeScreenStyles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    paddingTop: 50,
   },
   title: {
     fontSize: 20,

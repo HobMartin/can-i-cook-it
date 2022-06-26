@@ -1,13 +1,7 @@
 import { useStore } from "effector-react";
 import { useEffect, useState } from "react";
 import { Text, SafeAreaView, View, TextInput } from "../../components/Themed";
-import {
-  FlatList,
-  TouchableHighlight,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { FlatList, Image, TouchableOpacity, ScrollView } from "react-native";
 import { $receipts, fxLoadReceipts } from "./model";
 import { receiptScreenStyles } from "./styles";
 import { ReceiptCard } from "../../components/ReceiptCard";
@@ -16,7 +10,8 @@ import Colors from "../../constants/Colors";
 import { Favorite_IL, Search_IL } from "../../assets/illustration";
 import { $favoritesReceipts, fxGetFavorites } from "../../state/favorites";
 import { $user } from "../../state/user";
-import { useFocusEffect } from "@react-navigation/native";
+import _ from "lodash";
+import { storeRecentReceipts } from "./helper";
 
 export default function ReceiptsScreen({ route, navigation }: any) {
   const name = route?.params?.name;
@@ -34,13 +29,14 @@ export default function ReceiptsScreen({ route, navigation }: any) {
     fxGetFavorites(currentUser);
   }, [searchValue, name]);
 
+  const onReceiptClick = async (item: any) => {
+    await storeRecentReceipts(item);
+    navigation.navigate("Receipt", { receiptId: item.id ?? item.receipt });
+  };
+
   const renderItem = ({ item }: any) => {
     return (
-      <TouchableOpacity
-        onPress={() =>
-          navigation.navigate("Receipt", { receiptId: item.id ?? item.receipt })
-        }
-      >
+      <TouchableOpacity onPress={() => onReceiptClick(item)}>
         <ReceiptCard title={item?.title} image={item?.image} />
       </TouchableOpacity>
     );

@@ -3,22 +3,48 @@ import {
   Text,
   SafeAreaView,
   useThemeColor,
+  Button,
 } from "../../components/Themed";
-import React from "react";
+import React, { useState } from "react";
 import { profileScreenStyles } from "./styles";
 import { useStore } from "effector-react";
-import { $user } from "../../state/user";
+import { $user, updateUser } from "../../state/user";
 import { Image, TouchableOpacity } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { signOut } from "firebase/auth";
+import { signOut, updatePassword, updateProfile } from "firebase/auth";
 import { auth } from "../../firebase";
+import { ProfileEditForm } from "../../components/ProfileEditForm";
+import { UserPhotoUpload } from "../../components/ProfileEditForm/UserPhotoUpload";
 
 export default function ProfileScreen({ navigation }: any) {
   const currentUser = useStore($user);
+  const [editing, setEditing] = useState(false);
   const color = useThemeColor({}, "text");
+  const userOverviewColor = useThemeColor({}, "buttonBackground");
 
   const logout = () => {
     signOut(auth).then(() => navigation.navigate("Auth"));
+  };
+
+  const handleProfileEdit = (value: any) => {
+    const user = auth.currentUser;
+    if (user) {
+      if (value.displayName.trim().length) {
+        updateProfile(user, {
+          displayName: value.displayName,
+        }).then(() => {
+          updateUser({ ...currentUser, displayName: value.displayName.trim() });
+        });
+      }
+      if (value.password.trim().length) {
+        updatePassword(user, value.password.trim());
+      }
+    }
+    setEditing(false);
+  };
+
+  const cancelEdit = () => {
+    setEditing(false);
   };
 
   return (
@@ -29,15 +55,13 @@ export default function ProfileScreen({ navigation }: any) {
           <AntDesign name="logout" size={24} color={color} />
         </TouchableOpacity>
       </View>
-      <View style={profileScreenStyles.userOverview}>
-        <Image
-          style={profileScreenStyles.userAvatar}
-          source={{
-            uri:
-              currentUser.photoURL ??
-              "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png",
-          }}
-        />
+      <View
+        style={[
+          profileScreenStyles.userOverview,
+          { backgroundColor: userOverviewColor },
+        ]}
+      >
+        <UserPhotoUpload />
         <View style={profileScreenStyles.userInfo}>
           <Text style={profileScreenStyles.userInfoName}>
             {currentUser.displayName ?? ""}
@@ -47,6 +71,25 @@ export default function ProfileScreen({ navigation }: any) {
           </Text>
         </View>
       </View>
+      <View style={profileScreenStyles.editProfile}>
+        {!editing && (
+          <Button
+            onPress={() => {
+              setEditing(true);
+            }}
+            style={profileScreenStyles.editProfileButton}
+            icon="create-outline"
+            text="Редагувати профіль"
+          />
+        )}
+      </View>
+      {editing && (
+        <ProfileEditForm
+          onSubmit={handleProfileEdit}
+          submitText={"Підтвердити"}
+          onCancel={cancelEdit}
+        />
+      )}
     </SafeAreaView>
   );
 }

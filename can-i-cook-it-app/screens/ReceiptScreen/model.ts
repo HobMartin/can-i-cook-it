@@ -11,7 +11,6 @@ fxLoadReceipt.use(async (params) => {
 
   const extendedIngredients = await Promise.all(
     result.extendedIngredients.map(async (el: any) => {
-      console.log(el);
       return {
         id: el.id,
         name: await t(el.name),

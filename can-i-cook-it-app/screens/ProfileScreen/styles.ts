@@ -15,13 +15,7 @@ export const profileScreenStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
-  userAvatar: {
-    height: 64,
-    width: 64,
-    borderRadius: 32,
-  },
   userOverview: {
-    backgroundColor: Colors.light.tabIconDefault,
     height: 100,
     width: "100%",
     padding: 10,
@@ -44,5 +38,14 @@ export const profileScreenStyles = StyleSheet.create({
   userInfoEmail: {
     fontSize: 16,
     color: "#fff",
+  },
+  editProfile: {
+    alignItems: "flex-end",
+  },
+  editProfileButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+    borderRadius: 10,
   },
 });

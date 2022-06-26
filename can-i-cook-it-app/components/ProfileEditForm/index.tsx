@@ -1,14 +1,16 @@
-import { View, Text, TextInput, Button } from "../Themed";
+import { View, Text, TextInput, Button, useThemeColor } from "../Themed";
 import React from "react";
-import { Formik } from "formik";
+import { Formik, useFormikContext } from "formik";
 import { profileEditFormStyles } from "./styles";
 import { profileEditValidationSchema } from "./validation";
 
-export const ProfileEditForm = ({ onSubmit, submitText }: any) => {
+export const ProfileEditForm = ({ onSubmit, submitText, onCancel }: any) => {
+  const borderColor = useThemeColor({}, "buttonBackground");
+
   return (
     <View>
       <Formik
-        initialValues={{ email: "", password: "" }}
+        initialValues={{ displayName: "", password: "" }}
         onSubmit={(values, { resetForm, setSubmitting }) => {
           onSubmit(values);
           resetForm();
@@ -20,30 +22,33 @@ export const ProfileEditForm = ({ onSubmit, submitText }: any) => {
           handleChange,
           handleBlur,
           handleSubmit,
+          resetForm,
           errors,
           touched,
           values,
         }) => (
           <View style={profileEditFormStyles.container}>
             <TextInput
-              style={profileEditFormStyles.input}
+              style={[profileEditFormStyles.input, { borderColor }]}
               placeholder="Ваше ім'я"
-              onChangeText={handleChange("email")}
-              onBlur={handleBlur("email")}
-              value={values.email}
+              onChangeText={handleChange("displayName")}
+              onBlur={handleBlur("displayName")}
+              value={values.displayName}
             />
-            {errors.email && touched.email && (
+            {errors.displayName && touched.displayName && (
               <Text
                 style={profileEditFormStyles.inputErrorText}
                 lightColor="red"
                 darkColor="red"
               >
-                {errors.email}
+                {errors.displayName}
               </Text>
             )}
             <TextInput
-              style={profileEditFormStyles.input}
-              placeholder="Пароль"
+              style={[profileEditFormStyles.input, { borderColor }]}
+              placeholder="Новий пароль"
+              textContentType="newPassword"
+              secureTextEntry={true}
               onChangeText={handleChange("password")}
               onBlur={handleBlur("password")}
               value={values.password}
@@ -57,10 +62,19 @@ export const ProfileEditForm = ({ onSubmit, submitText }: any) => {
                 {errors.password}
               </Text>
             )}
+
             <Button
-              style={profileEditFormStyles.submit}
+              style={profileEditFormStyles.button}
               onPress={handleSubmit as any}
-              text={submitText}
+              text="Підтвердити"
+            />
+            <Button
+              style={profileEditFormStyles.button}
+              onPress={() => {
+                onCancel && onCancel();
+                resetForm();
+              }}
+              text="Скасувати"
             />
           </View>
         )}

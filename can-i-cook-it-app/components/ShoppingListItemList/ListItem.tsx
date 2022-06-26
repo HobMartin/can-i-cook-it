@@ -6,16 +6,27 @@ import { useThemeColor } from "../Themed";
 
 interface ListItemProps {
   name: string;
+  isChecked: boolean;
+  lightColor?: string;
+  darkColor?: string;
+  onChange: (checked: boolean) => void;
 }
 
-export const ListItem: FC<ListItemProps> = ({ name }) => {
-  const [checked, setChecked] = useState(false);
-
-  const color = useThemeColor({}, "tabIconDefault");
+export const ListItem: FC<ListItemProps> = ({
+  name,
+  isChecked = false,
+  lightColor,
+  darkColor,
+  onChange,
+}) => {
+  const color = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "tabIconDefault"
+  );
 
   return (
     <View style={{ ...listItemStyle.container, backgroundColor: color }}>
-      <Checkbox text={name} value={checked} onValueChange={setChecked} />
+      <Checkbox text={name} value={isChecked} onValueChange={onChange} />
     </View>
   );
 };

@@ -1,9 +1,5 @@
-import {
-  StyleSheet,
-  StyleSheetProperties,
-  TouchableWithoutFeedback,
-} from "react-native";
-import React, { FC, useCallback, useState } from "react";
+import { StyleSheet, TouchableWithoutFeedback } from "react-native";
+import React, { FC, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Text, useThemeColor, View } from "../Themed";
 

@@ -21,4 +21,10 @@ export const ShoppingListItemStyles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: "flex-start",
   },
+  removeButton: {
+    padding: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#E99497",
+    borderRadius: 20,
+  },
 });

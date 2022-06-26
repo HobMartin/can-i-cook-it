@@ -24,8 +24,8 @@
           "icon": "./assets/images/icon.png",
           "color": "#ffffff",
           "sounds": [
-            "./assets/sound/push-sound.wav",
-            "./assets/sound/push-sound-another.wav"
+            "./assets/sound/push_sound.wav",
+            "./assets/sound/push_sound_another.wav"
           ]
         }
       ]
@@ -37,7 +37,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.hobmartin.canicookit"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

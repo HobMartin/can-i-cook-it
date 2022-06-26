@@ -21,7 +21,14 @@ import Colors from "../../constants/Colors";
 import { buildImageUrl, capitalizeFirstLetter } from "./helper";
 import { Ionicons } from "@expo/vector-icons";
 import { openBrowserAsync } from "expo-web-browser";
-import { addDoc, collection, deleteDoc, doc, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  setDoc,
+  Timestamp,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 import { $user } from "../../state/user";
 import {
@@ -29,6 +36,7 @@ import {
   removeFromFavorites,
   updateFavoritesReceipt,
 } from "../../state/favorites";
+import dayjs from "dayjs";
 
 export default function ReceiptScreen({ route, navigation }: any) {
   const { receiptId } = route.params;
@@ -78,20 +86,26 @@ export default function ReceiptScreen({ route, navigation }: any) {
   };
 
   const handleCreateList = async () => {
-    const docRef = doc(
-      db,
-      "ShoppingLists",
-      `${currentUser.email ?? currentUser.uid}|${new Date().toISOString()}`
-    );
     const list = receipt.extendedIngredients.map((ingredient: any) => ({
       name: capitalizeFirstLetter(ingredient.name),
       amount: `${ingredient.amount} ${ingredient.unit}`,
+      done: false,
     }));
 
+    const docRef = await doc(collection(db, "ShoppingLists"));
+
     setDoc(docRef, {
-      id: new Date().toISOString(),
       name: receipt.title,
       list,
+      userId: currentUser.uid,
+      notify: Timestamp.fromDate(
+        dayjs()
+          .add(1, "day")
+          .set("hour", 13)
+          .set("minute", 0)
+          .set("second", 0)
+          .toDate()
+      ),
     }).then(() => {
       navigation.navigate("ShopsScreens");
     });
