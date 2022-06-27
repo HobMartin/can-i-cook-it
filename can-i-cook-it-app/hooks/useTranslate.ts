@@ -15,12 +15,17 @@ export const useTranslation = (text: string) => {
   return translatedText;
 };
 
-export const t = async (originalText: string) => {
+export const t = async (
+  originalText: string,
+  originalLanguage?: string,
+  targetLanguage?: string
+) => {
   try {
     const { text } = await translate(
       originalText?.length ? originalText : " ",
       {
-        to: targetLanguageCode,
+        from: originalLanguage ?? "en",
+        to: targetLanguage ?? targetLanguageCode,
       }
     );
     return text;

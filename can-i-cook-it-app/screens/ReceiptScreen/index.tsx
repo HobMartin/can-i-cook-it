@@ -81,7 +81,7 @@ export default function ReceiptScreen({ route, navigation }: any) {
       receipt: receiptId,
       doc: docRef.id,
       image: receipt.image,
-      title: receipt.name,
+      title: receipt.title,
     });
   };
 
@@ -163,12 +163,12 @@ export default function ReceiptScreen({ route, navigation }: any) {
             />
             <Text>{receipt.readyInMinutes} хвилин</Text>
           </View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={sourceOpen}
             style={receiptScreenStyles.urlSource}
           >
             <Text>Кроки</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <FlatList
           data={receipt.extendedIngredients}

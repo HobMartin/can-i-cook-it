@@ -1,4 +1,5 @@
 import axios from "axios";
+import { t } from "../hooks/useTranslate";
 import { convertToSearchParams } from "./helper";
 import { getReceiptParams } from "./types";
 import {
@@ -16,7 +17,12 @@ export const getReceipts = async (params: getReceiptParams) => {
 };
 
 export const getSearchSpoonReceipts = async (params: getReceiptParams) => {
-  const queryParams = convertToSearchParams({ ...spoonBasicParams, ...params });
+  const translatedText = await t(params.query ?? "", "uk", "en");
+  const queryParams = convertToSearchParams({
+    ...spoonBasicParams,
+    query: translatedText,
+  });
+  console.log({ queryParams });
 
   const response = await axios.get(
     `${SPOON_BASE_URL}/complexSearch?${queryParams.toString()}`

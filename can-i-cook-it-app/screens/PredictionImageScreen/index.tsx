@@ -27,7 +27,7 @@ export default function PredictionImageScreen({ navigation }: any) {
   const handleCorrectAnswer = () => {
     const docRef = doc(
       db,
-      predictionResult,
+      predictionResult.food_name,
       `correct-${new Date().toISOString()}`
     );
     setDoc(docRef, {
@@ -37,7 +37,7 @@ export default function PredictionImageScreen({ navigation }: any) {
       navigation.navigate("ReceiptsScreens", {
         screen: "Receipts",
         params: {
-          name: predictionResult,
+          name: predictionResult.food_name,
         },
       });
     });
@@ -78,7 +78,12 @@ export default function PredictionImageScreen({ navigation }: any) {
         source={{ uri: image }}
         style={{ height: 350, width: "100%", resizeMode: "stretch" }}
       />
-      <Text style={predictImageScreenStyles.result}>{predictionResult}</Text>
+      <Text style={predictImageScreenStyles.result}>
+        {predictionResult.food_name}
+      </Text>
+      <Text style={predictImageScreenStyles.result}>
+        Точність {predictionResult.model_score} %
+      </Text>
       {incorrectForm ? (
         <View style={predictImageScreenStyles.foodNameForm}>
           <TextInput

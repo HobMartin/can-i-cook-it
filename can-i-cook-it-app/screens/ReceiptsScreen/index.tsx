@@ -22,12 +22,15 @@ export default function ReceiptsScreen({ route, navigation }: any) {
   const favorites = useStore($favoritesReceipts);
 
   useEffect(() => {
-    fxLoadReceipts({ query: searchValue });
     if (name) {
       setSearch(name);
     }
+  }, [name]);
+
+  useEffect(() => {
+    fxLoadReceipts({ query: searchValue });
     fxGetFavorites(currentUser);
-  }, [searchValue, name]);
+  }, [searchValue]);
 
   const onReceiptClick = async (item: any) => {
     await storeRecentReceipts(item);

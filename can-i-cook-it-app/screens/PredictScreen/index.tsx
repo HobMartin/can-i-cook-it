@@ -1,4 +1,9 @@
-import { Text, SafeAreaView, View } from "../../components/Themed";
+import {
+  Text,
+  SafeAreaView,
+  View,
+  useThemeColor,
+} from "../../components/Themed";
 import * as ImagePicker from "expo-image-picker";
 import React, { useEffect } from "react";
 import { predictScreenStyles } from "./styles";
@@ -50,19 +55,20 @@ export default function PredictScreen({ navigation }: any) {
       .catch((error) => alert("Щось пішло не так!"));
   };
 
+  const backgroundColor = useThemeColor({}, "buttonBackground");
   return (
     <SafeAreaView style={predictScreenStyles.container}>
       <Image source={Question_IL} style={predictScreenStyles.image} />
       <View>
         <TouchableOpacity
           onPress={openGallery}
-          style={predictScreenStyles.button}
+          style={[predictScreenStyles.button, { backgroundColor }]}
         >
           <Text>Вибрати фото з галереї</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={openCamera}
-          style={predictScreenStyles.button}
+          style={[predictScreenStyles.button, { backgroundColor }]}
         >
           <Text>Зробити знімок</Text>
         </TouchableOpacity>

@@ -25,7 +25,6 @@ import ReceiptScreen from "../screens/ReceiptScreen";
 import LoginScreen from "../screens/LoginScreen";
 import SignUpScreen from "../screens/SignupScreen";
 import ReceiptsScreen from "../screens/ReceiptsScreen";
-import { Text } from "../components/Themed";
 import ProfileScreen from "../screens/ProfileScreen";
 import PredictScreen from "../screens/PredictScreen";
 import ShoppingListScreen from "../screens/ShoppingListScreen";

@@ -3,6 +3,7 @@ import React, { FC, useState } from "react";
 import { Checkbox } from "../Checkbox";
 import { StyleSheet } from "react-native";
 import { useThemeColor } from "../Themed";
+import { openBrowserAsync } from "expo-web-browser";
 
 interface ListItemProps {
   name: string;
@@ -24,9 +25,20 @@ export const ListItem: FC<ListItemProps> = ({
     "tabIconDefault"
   );
 
+  const handleShopClick = () => {
+    openBrowserAsync(
+      "https://zakaz.atbmarket.com/sch?page=1&lang=uk&query=" + name
+    );
+  };
+
   return (
     <View style={{ ...listItemStyle.container, backgroundColor: color }}>
-      <Checkbox text={name} value={isChecked} onValueChange={onChange} />
+      <Checkbox
+        text={name}
+        value={isChecked}
+        onValueChange={onChange}
+        onShopIconClick={handleShopClick}
+      />
     </View>
   );
 };

@@ -1,8 +1,8 @@
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useEffect } from "react";
-import { TouchableHighlight } from "react-native";
+import { TouchableHighlight, TouchableOpacity } from "react-native";
 import { AuthForm } from "../../components/AuthForm";
-import { Text, View } from "../../components/Themed";
+import { Text, useThemeColor, View } from "../../components/Themed";
 import { auth } from "../../firebase";
 import { updateUser } from "../../state/user";
 import { loginScreenStyles } from "./styles";
@@ -29,15 +29,17 @@ export default function LoginScreen({ navigation }: any) {
     };
   }, []);
 
+  const color = useThemeColor({}, "buttonBackground");
+
   return (
     <View style={loginScreenStyles.container}>
       <Text style={loginScreenStyles.title}>Вхід</Text>
       <AuthForm onSubmit={handleSubmit} submitText="Увійти" />
       <View>
         <Text>Не має аккаунту?</Text>
-        <TouchableHighlight onPress={() => navigation.replace("Signup")}>
-          <Text>Зареєструватись</Text>
-        </TouchableHighlight>
+        <TouchableOpacity onPress={() => navigation.replace("Signup")}>
+          <Text style={{ color }}>Зареєструватись</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

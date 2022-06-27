@@ -52,7 +52,13 @@ export default function ShoppingListItemScreen({ route, navigation }: any) {
         onShare={handleShare}
         onDateChange={handleDateChange}
       />
-      <View style={{ height: 150, justifyContent: "flex-end" }}>
+      <View
+        style={{
+          height: 150,
+          justifyContent: "flex-end",
+          backgroundColor: "transparent",
+        }}
+      >
         <Button
           style={ShoppingListItemStyles.removeButton}
           icon="trash"
