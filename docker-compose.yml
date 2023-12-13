@@ -6,8 +6,6 @@ services:
     image: can-i-cook-it
     container_name: can-i-cook-it-server
     restart: always
-    env_file:
-      - .env
     volumes:
       - ./server:/server
     ports:

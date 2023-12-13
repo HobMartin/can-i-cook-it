@@ -1,0 +1,26 @@
+# flyctl launch added from .gitignore
+**/files
+images
+
+**/testset
+**/working
+**/archive
+**/__pycache__
+**/logs
+**/test
+
+**/node_modules
+**/.expo
+**/dist
+**/npm-debug.*
+**/*.jks
+**/*.p8
+**/*.p12
+**/*.key
+**/*.mobileprovision
+**/*.orig.*
+**/web-build
+**/.env
+# macOS
+**/.DS_Store
+fly.toml

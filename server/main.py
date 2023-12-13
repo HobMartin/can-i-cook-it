@@ -1,7 +1,8 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from predict import predict
+from inference import model_fn, input_fn, predict_fn, output_fn
 
 app = FastAPI()
 
@@ -15,9 +16,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+model = model_fn(os.environ["SM_MODEL_DIR"])
+
 
 def predict_image(image):
-    result = predict(image)
+    input = input_fn(image)
+    prediction = predict_fn(input, model)
+    result = output_fn(prediction)
     return result
 
 
@@ -26,14 +31,19 @@ async def root():
     return {"message": "Hello World"}
 
 
+@app.get("/ping")
+async def root():
+    return "pong"
+
+
 class Image(BaseModel):
-    file: str
+    url: str
 
 
-@app.post("/predict/")
-async def create_upload_file(file: Image):
+@app.post("/invocations")
+async def create_upload_file(image: Image):
     try:
-        result = predict_image(file.file)
+        result = predict_image(image.url)
         return result
     except Exception as e:
         return {"error": str(e)}
