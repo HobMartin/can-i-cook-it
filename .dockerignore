@@ -24,3 +24,6 @@ images
 # macOS
 **/.DS_Store
 fly.toml
+
+**/server/model/*
+!**/server/model/effnetB5.pt
