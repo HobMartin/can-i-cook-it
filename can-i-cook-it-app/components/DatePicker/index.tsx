@@ -1,11 +1,13 @@
 import React, { FC, useState } from "react";
 import { Button, View, Text } from "../Themed";
 import {
+  AndroidNativeProps,
   DateTimePickerAndroid,
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import dayjs, { Dayjs } from "dayjs";
 import { StyleSheet } from "react-native";
+import { router } from "expo-router";
 
 interface DatePickerProps {
   value?: Dayjs;
@@ -19,6 +21,7 @@ export const DatePicker: FC<DatePickerProps> = ({
   type = "datetime",
 }) => {
   const [date, setDate] = useState(value ?? dayjs());
+  const [show, setShow] = useState(false);
 
   const handleChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     const date = dayjs(selectedDate);
@@ -26,7 +29,7 @@ export const DatePicker: FC<DatePickerProps> = ({
     setDate(date);
   };
 
-  const showMode = (currentMode: any) => {
+  const showMode = (currentMode: AndroidNativeProps["mode"]) => {
     DateTimePickerAndroid.open({
       value: date.toDate(),
       onChange: handleChange,
@@ -36,7 +39,8 @@ export const DatePicker: FC<DatePickerProps> = ({
   };
 
   const showDatepicker = () => {
-    showMode("date");
+    router.push("/list/dateTimeModal");
+    // showMode("date");
   };
 
   const showTimepicker = () => {

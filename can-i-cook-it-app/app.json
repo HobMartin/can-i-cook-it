@@ -6,7 +6,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "can-i-cook-it",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -16,7 +16,9 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "plugins": [
       [
         "expo-notifications",
@@ -28,7 +30,8 @@
             "./assets/sound/push_sound_another.wav"
           ]
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "ios": {
       "supportsTablet": true
@@ -41,7 +44,8 @@
       "package": "com.hobmartin.canicookit"
     },
     "web": {
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "bundler": "metro"
     }
   }
 }

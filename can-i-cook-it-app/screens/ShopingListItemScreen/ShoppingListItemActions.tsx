@@ -1,7 +1,9 @@
 import { View, Text, Button } from "../../components/Themed";
 import React, { FC } from "react";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "../../components/DatePicker";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Platform } from "react-native";
 
 interface ShoppingListItemActionsProps {
   onShare: () => void;
@@ -38,13 +40,41 @@ export const ShoppingListItemActions: FC<ShoppingListItemActionsProps> = ({
         text="Поділитись"
       />
       <View style={{ backgroundColor: "transparent" }}>
-        <DatePicker value={dateValue} onChange={onDateChange} />
-        <View style={{ backgroundColor: "transparent" }}>
+        {Platform.OS === "android" && (
+          <DatePicker value={dateValue} onChange={onDateChange} />
+        )}
+        <View style={{ backgroundColor: "transparent", alignItems: "center" }}>
           <Text style={{ fontSize: 18 }}>Нагадування</Text>
-          <Text>{dateValue.format("DD MMMM YYYY")}</Text>
-          <Text style={{ textAlign: "center" }}>
-            {dateValue.format("HH:mm")}
-          </Text>
+          <View
+            style={{
+              backgroundColor: "transparent",
+              alignItems: "center",
+              flexDirection: "row",
+            }}
+          >
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={dateValue.toDate()}
+              mode={"date"}
+              is24Hour={true}
+              onChange={(_, date) => onDateChange(dayjs(date))}
+            />
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={dateValue.toDate()}
+              mode={"time"}
+              is24Hour={true}
+              onChange={(_, date) => onDateChange(dayjs(date))}
+            />
+          </View>
+          {Platform.OS === "android" && (
+            <>
+              <Text>{dateValue.format("DD MMMM YYYY")}</Text>
+              <Text style={{ textAlign: "center" }}>
+                {dateValue.format("HH:mm")}
+              </Text>
+            </>
+          )}
         </View>
       </View>
     </View>

@@ -6,28 +6,25 @@ import { Text, useThemeColor, View } from "../../components/Themed";
 import { auth } from "../../firebase";
 import { updateUser } from "../../state/user";
 import { loginScreenStyles } from "./styles";
+import { router } from "expo-router";
+import { supabase } from "../../initSupabase";
 
-export default function LoginScreen({ navigation }: any) {
-  const handleSubmit = (values: any) => {
-    signInWithEmailAndPassword(auth, values.email, values.password).then(
-      (user) => {
-        updateUser(user.user);
-        navigation.replace("Root");
-      }
-    );
-  };
-
-  useEffect(() => {
-    const unsubscribe = getAuth().onAuthStateChanged((user) => {
-      if (user) {
-        updateUser(user);
-        navigation.replace("Root");
-      }
+export default function LoginScreen() {
+  const handleSubmit = async (values: any) => {
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.signInWithPassword({
+      email: values.email,
+      password: values.password,
     });
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+    console.log(user, error);
+
+    if (user) {
+      updateUser(user);
+      router.replace("/(tabs)");
+    }
+  };
 
   const color = useThemeColor({}, "buttonBackground");
 
@@ -36,8 +33,8 @@ export default function LoginScreen({ navigation }: any) {
       <Text style={loginScreenStyles.title}>Вхід</Text>
       <AuthForm onSubmit={handleSubmit} submitText="Увійти" />
       <View>
-        <Text>Не має аккаунту?</Text>
-        <TouchableOpacity onPress={() => navigation.replace("Signup")}>
+        <Text>Не має акаунту?</Text>
+        <TouchableOpacity onPress={() => router.replace("/signUp")}>
           <Text style={{ color }}>Зареєструватись</Text>
         </TouchableOpacity>
       </View>

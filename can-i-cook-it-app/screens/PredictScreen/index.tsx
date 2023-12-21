@@ -13,6 +13,9 @@ import { checkCameraPermission } from "./helper";
 import { storage } from "../../firebase";
 import { getDownloadURL, ref, uploadBytes } from "@firebase/storage";
 import { updateImage } from "./model";
+import { supabase } from "../../initSupabase";
+import { router } from "expo-router";
+import { uploadToSupabase } from "../../utils/uploadToSupabase";
 
 export default function PredictScreen({ navigation }: any) {
   useEffect(() => {
@@ -23,9 +26,10 @@ export default function PredictScreen({ navigation }: any) {
     const pickerResult = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
+      base64: true,
     });
-    if (!pickerResult.cancelled) {
-      await uploadImage(pickerResult.uri);
+    if (!pickerResult.canceled) {
+      await uploadImage(pickerResult.assets[0].uri);
     }
   };
 
@@ -33,26 +37,23 @@ export default function PredictScreen({ navigation }: any) {
     let pickerResult = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [4, 3],
+      base64: true,
     });
-    if (!pickerResult.cancelled) {
-      await uploadImage(pickerResult.uri);
+    if (!pickerResult.canceled) {
+      await uploadImage(pickerResult.assets[0].base64);
     }
   };
 
-  const uploadImage = async (image: string) => {
-    const response = await fetch(image);
-    const blob = await response.blob();
-    const storageRef = ref(storage, "image/" + new Date().toISOString());
+  const uploadImage = async (image: string | null | undefined) => {
+    if (!image) {
+      return;
+    }
 
-    uploadBytes(storageRef, blob)
-      .then(async (snapshot) => {
-        const downloadUrl = await getDownloadURL(
-          ref(storage, snapshot.ref.fullPath)
-        );
-        updateImage(downloadUrl);
-        navigation.navigate("PredictionImage");
-      })
-      .catch((error) => alert("Щось пішло не так!"));
+    const publicUrl = await uploadToSupabase(image, "jpg", "Prediction");
+    updateImage(publicUrl);
+    console.log(publicUrl);
+
+    router.push("/predict/result");
   };
 
   const backgroundColor = useThemeColor({}, "buttonBackground");

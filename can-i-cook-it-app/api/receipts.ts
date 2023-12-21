@@ -1,13 +1,23 @@
 import axios from "axios";
-import { t } from "../hooks/useTranslate";
 import { convertToSearchParams } from "./helper";
-import { getReceiptParams } from "./types";
+import { Receipt, ReceiptsResponse, getReceiptParams } from "./types";
 import {
   BASE_URL,
   basicParams,
   spoonBasicParams,
   SPOON_BASE_URL,
 } from "./urls";
+import { supabase } from "../initSupabase";
+
+const API_BASE_URL = "https://lfqmthf5-80.euw.devtunnels.ms";
+
+export const getPagination = (page?: number, size: number = 10) => {
+  const limit = size;
+  const from = page ? page * limit : 0;
+  const to = page ? from + size - 1 : size - 1;
+
+  return { from, to };
+};
 
 export const getReceipts = async (params: getReceiptParams) => {
   const queryParams = convertToSearchParams({ ...basicParams, ...params });
@@ -16,13 +26,62 @@ export const getReceipts = async (params: getReceiptParams) => {
   return data;
 };
 
+export const getRecipes = async (
+  page: number = 1,
+  size: number = 10,
+  q?: string,
+  userId?: string
+) => {
+  const { from, to } = getPagination(page, size);
+
+  const query = supabase
+    .from("receipt")
+    .select(
+      "*, step(id, number, description, image), ingredient(id, name), rating_receipt(value)",
+      {
+        count: "exact",
+      }
+    )
+    .order("created_at", { ascending: false });
+
+  const { data, count, error } = q
+    ? await query.textSearch("receipt_name", q, {
+        type: "websearch",
+      })
+    : userId
+    ? await query.eq("created_by", userId)
+    : await query.range(from, to);
+
+  if (error) {
+    throw error;
+  }
+
+  return { data, total: count, page, size };
+};
+export const getRecipe = async (id: string) => {
+  const { data, error } = await supabase
+    .from("receipt")
+    .select(
+      "*, step(id, number, description, image), ingredient(id, name), rating_receipt(value)"
+    )
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+  // const { data } = await axios.get<Receipt>(`${API_BASE_URL}/receipts/${id}`);
+
+  // return data;
+};
+
 export const getSearchSpoonReceipts = async (params: getReceiptParams) => {
-  const translatedText = await t(params.query ?? "", "uk", "en");
   const queryParams = convertToSearchParams({
     ...spoonBasicParams,
-    query: translatedText,
+    query: params.query ?? "",
   });
-  console.log({ queryParams });
 
   const response = await axios.get(
     `${SPOON_BASE_URL}/complexSearch?${queryParams.toString()}`

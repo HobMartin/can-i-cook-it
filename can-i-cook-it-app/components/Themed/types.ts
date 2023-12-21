@@ -4,6 +4,8 @@ import {
   TextInputProps as DefaultTextInputProps,
   TouchableHighlightProps as DefaultTouchableHighlightProps,
   SafeAreaView as DefaultSafeAreaView,
+  StyleProp,
+  TextStyle,
 } from "react-native";
 
 type ThemeProps = {
@@ -14,6 +16,8 @@ type ThemeProps = {
 type CustomButton = {
   text?: string;
   icon?: any;
+  iconColor?: string;
+  textStyle?: StyleProp<TextStyle>;
 };
 
 export type TextProps = ThemeProps & DefaultTextProps;

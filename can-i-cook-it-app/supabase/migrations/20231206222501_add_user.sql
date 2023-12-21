@@ -1,0 +1,3 @@
+ALTER TABLE shopping_list ADD COLUMN user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE;
+
+ALTER TABLE favorites ADD COLUMN user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE;

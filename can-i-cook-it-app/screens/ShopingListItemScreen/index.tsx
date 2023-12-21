@@ -1,4 +1,4 @@
-import { Share } from "react-native";
+import { Platform, Share } from "react-native";
 import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
 
@@ -6,20 +6,28 @@ import { Text, View, Button } from "../../components/Themed";
 import { ShoppingListItemStyles } from "./styles";
 import { ShoppingListItemList } from "../../components/ShoppingListItemList";
 import { schedulePushNotification } from "../../hooks/useNotification";
-import { fxUpdateShoppingListItem } from "../../state/shoppingList";
+import {
+  ShoppingList,
+  fxDeleteShoppingList,
+  fxUpdateShoppingListItem,
+} from "../../state/shoppingList";
 import { ShoppingListItemActions } from "./ShoppingListItemActions";
 import { deleteDoc, doc, Timestamp } from "firebase/firestore";
 import { db } from "../../firebase";
+import { StatusBar } from "expo-status-bar";
+import { router } from "expo-router";
 
-export default function ShoppingListItemScreen({ route, navigation }: any) {
-  const { item } = route?.params;
+type Props = {
+  list: ShoppingList;
+};
 
-  const [date, setDate] = useState(dayjs(item.notify));
+export default function ShoppingListItemScreen({ list }: Props) {
+  const [date, setDate] = useState(dayjs(list?.notify));
 
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Потрібно купити для ${item.name}:\n${item.list
+        message: `Потрібно купити для ${list.name}:\n${list.list
           .map((el: any) => "● " + el.name)
           .join("\n")}`,
       });
@@ -29,24 +37,24 @@ export default function ShoppingListItemScreen({ route, navigation }: any) {
   };
 
   const handleDateChange = async (date: Dayjs) => {
+    if (date.isSame(dayjs(list.notify))) return;
     setDate(date.set("second", 0));
     await fxUpdateShoppingListItem({
-      id: item.id,
-      data: { notify: Timestamp.fromDate(date.toDate()) },
+      id: list.id,
+      data: { notify: date.toISOString() },
     });
-    await schedulePushNotification("Нагадування про покупку", item.name, date);
+    // await schedulePushNotification("Нагадування про покупку", list.name, date);
   };
 
-  const handleDelete = () => {
-    deleteDoc(doc(db, "ShoppingLists", item.id)).then(() => {
-      navigation.navigate("ShoppingLists");
-    });
+  const handleDelete = async () => {
+    await fxDeleteShoppingList(list.id);
+    router.replace("/list");
   };
 
   return (
     <View style={ShoppingListItemStyles.container}>
-      <Text style={ShoppingListItemStyles.title}>{item.name}</Text>
-      <ShoppingListItemList list={item.list} id={item.id} />
+      {/* <Text style={ShoppingListItemStyles.title}>{list.name}</Text> */}
+      <ShoppingListItemList list={list.list} id={list.id} />
       <ShoppingListItemActions
         dateValue={date}
         onShare={handleShare}
@@ -66,6 +74,7 @@ export default function ShoppingListItemScreen({ route, navigation }: any) {
           text="Видалити список"
         />
       </View>
+      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </View>
   );
 }

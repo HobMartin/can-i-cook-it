@@ -7,12 +7,13 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, storage } from "../../firebase";
 import { update } from "firebase/database";
 import { updateProfile } from "firebase/auth";
+import { supabase } from "../../initSupabase";
+import { useUnit } from "effector-react";
+import { $user } from "../../state/user";
+import { uploadToSupabase } from "../../utils/uploadToSupabase";
 
 export const UserPhotoUpload = () => {
-  const [userPhoto, setUserPhoto] = useState(
-    auth.currentUser?.photoURL ??
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png"
-  );
+  const currentUser = useUnit($user);
   useEffect(() => {
     checkCameraPermission();
   }, []);
@@ -21,36 +22,41 @@ export const UserPhotoUpload = () => {
     let pickerResult = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [1, 1],
+      base64: true,
     });
-    if (!pickerResult.cancelled) {
-      await uploadImage(pickerResult.uri);
+    if (!pickerResult.canceled) {
+      await uploadImage(pickerResult.assets[0].base64);
     }
   };
 
-  const uploadImage = async (image: string) => {
-    const response = await fetch(image);
-    const blob = await response.blob();
-    const storageRef = ref(storage, "image/" + new Date().toISOString());
+  const uploadImage = async (image: string | null | undefined) => {
+    if (!image) {
+      return;
+    }
 
-    uploadBytes(storageRef, blob)
-      .then(async (snapshot) => {
-        const downloadUrl = await getDownloadURL(
-          ref(storage, snapshot.ref.fullPath)
-        );
-        auth.currentUser &&
-          updateProfile(auth.currentUser, {
-            photoURL: downloadUrl,
-          });
-        setUserPhoto(downloadUrl);
-      })
-      .catch((error) => alert("Щось пішло не так!"));
+    const publicUrl = await uploadToSupabase(
+      image,
+      "jpg",
+      "avatars",
+      `${currentUser.id}/avatar`
+    );
+
+    const { data: user } = await supabase.auth.updateUser({
+      data: { avatar_url: publicUrl },
+    });
+
+    if (!user) {
+      return;
+    }
   };
   return (
     <Pressable onPress={openGallery}>
       <Image
         style={style.userAvatar}
         source={{
-          uri: userPhoto,
+          uri:
+            currentUser.user_metadata?.avatar_url ??
+            "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png",
         }}
       />
     </Pressable>

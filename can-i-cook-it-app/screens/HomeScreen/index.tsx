@@ -1,10 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
-import dayjs from "dayjs";
-import { useStore, useStoreMap } from "effector-react";
-import React, { useEffect, useState } from "react";
-import { FlatList, Image, TouchableOpacity } from "react-native";
-import { Cook_IL } from "../../assets/illustration";
+
+import { useUnit } from "effector-react";
+import React, { useCallback, useEffect, useState } from "react";
+import { FlatList, TouchableOpacity } from "react-native";
 import { ReceiptCard } from "../../components/ReceiptCard";
 import { ShoppingListItem } from "../../components/ShopingListItem";
 import { Text, SafeAreaView, View } from "../../components/Themed";
@@ -12,26 +11,35 @@ import {
   $shoppingList,
   $todayShoppingList,
   fxLoadShoppingList,
+  selectShoppingList,
 } from "../../state/shoppingList";
 import { $user } from "../../state/user";
 import { receiptScreenStyles } from "../ReceiptScreen/styles";
 import { homeScreenStyles } from "./styles";
+import { router } from "expo-router";
+import { openReceiptPage } from "../../utils/openReceiptPage";
+import {
+  $recommendedRecipes,
+  fxLoadPopularRecipes,
+} from "../../state/recommendation";
 
 export default function HomeScreen({ navigation }: any) {
   const [recentReceipt, setRecentReceipt] = useState([]);
-  const currentUser = useStore($user);
+  const currentUser = useUnit($user);
+  const popularReceipts = useUnit($recommendedRecipes);
 
-  const todayList = useStore($todayShoppingList);
+  const todayList = useUnit($todayShoppingList);
   const renderItem = ({ item }: any) => {
     return (
       <TouchableOpacity onPress={() => onReceiptClick(item)}>
-        <ReceiptCard title={item?.title} image={item?.image} />
+        <ReceiptCard title={item?.receipt_name} image={item?.image} />
       </TouchableOpacity>
     );
   };
 
   const handleItemPress = (item: any) => {
-    navigation.navigate("ShoppingList", { item });
+    selectShoppingList(item);
+    router.push(`/list/${item.id}`);
   };
 
   const renderListItem = ({ item }: any) => {
@@ -48,31 +56,32 @@ export default function HomeScreen({ navigation }: any) {
   };
 
   useEffect(() => {
-    AsyncStorage.getItem("recentReceipt").then((recent) => {
-      recent !== null && setRecentReceipt(JSON.parse(recent));
-    });
+    fxLoadPopularRecipes();
   }, []);
-  useFocusEffect(() => {
-    fxLoadShoppingList(currentUser);
-  });
+
+  useFocusEffect(
+    useCallback(() => {
+      fxLoadShoppingList();
+    }, [])
+  );
 
   const onReceiptClick = async (item: any) => {
-    navigation.navigate("Receipt", { receiptId: item.id ?? item.receipt });
+    openReceiptPage(item.id ?? item.receipt);
   };
   return (
-    <SafeAreaView style={homeScreenStyles.container}>
+    <View style={homeScreenStyles.container}>
       <Text
         style={{
           fontSize: 18,
           fontWeight: "bold",
         }}
       >
-        Останні відвідані рецепти
+        Рекомендовані рецепти
       </Text>
       <FlatList
         style={receiptScreenStyles.receiptList}
         horizontal={true}
-        data={recentReceipt}
+        data={popularReceipts}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
       />
@@ -92,6 +101,6 @@ export default function HomeScreen({ navigation }: any) {
           keyExtractor={(item) => item.id}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

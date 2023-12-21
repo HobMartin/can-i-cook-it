@@ -1,6 +1,6 @@
 import { View, Text } from "../Themed";
 import React, { useEffect } from "react";
-import { useStore } from "effector-react";
+import { useUnit } from "effector-react";
 import { $sameReceipts, fxLoadSameReceipts } from "./model";
 
 interface SameReceiptProps {
@@ -8,7 +8,7 @@ interface SameReceiptProps {
 }
 
 export const SameReceipt = ({ id }: SameReceiptProps) => {
-  const similarReceipts = useStore($sameReceipts);
+  const similarReceipts = useUnit($sameReceipts);
 
   useEffect(() => {
     fxLoadSameReceipts(id);

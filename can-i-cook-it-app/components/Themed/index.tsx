@@ -8,8 +8,9 @@ import {
   TextInput as DefaultTextInput,
   View as DefaultView,
   TouchableOpacity as DefaultTouchableOpacity,
-  SafeAreaView as DefaultSafeAreaView,
 } from "react-native";
+
+import { SafeAreaView as DefaultSafeAreaView } from "react-native-safe-area-context";
 
 import { Ionicons } from "@expo/vector-icons";
 
@@ -28,7 +29,7 @@ export function useThemeColor(
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark
 ) {
   const theme = useColorScheme();
-  const colorFromProps = props[theme];
+  const colorFromProps = props["light"];
 
   if (colorFromProps) {
     return colorFromProps;
@@ -39,7 +40,7 @@ export function useThemeColor(
 
 export function Text(props: TextProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+  const color = useThemeColor({ light: lightColor, dark: lightColor }, "text");
 
   return <DefaultText style={[{ color }, style]} {...otherProps} />;
 }
@@ -47,7 +48,7 @@ export function Text(props: TextProps) {
 export function View(props: ViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const backgroundColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
+    { light: lightColor, dark: lightColor },
     "background"
   );
 
@@ -56,13 +57,13 @@ export function View(props: ViewProps) {
 
 export function TextInput(props: TextInputProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+  const color = useThemeColor({ light: lightColor, dark: lightColor }, "text");
   const borderColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
+    { light: lightColor, dark: lightColor },
     "borderColor"
   );
   const placeholderTextColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
+    { light: lightColor, dark: lightColor },
     "placeholder"
   );
 
@@ -76,14 +77,23 @@ export function TextInput(props: TextInputProps) {
 }
 
 export function Button(props: ButtonProps) {
-  const { style, text, icon, lightColor, darkColor, ...otherProps } = props;
+  const {
+    style,
+    text,
+    textStyle,
+    icon,
+    iconColor = "white",
+    lightColor,
+    darkColor,
+    ...otherProps
+  } = props;
   const borderColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
+    { light: lightColor, dark: lightColor },
     "borderColor"
   );
 
   const backgroundColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
+    { light: lightColor, dark: lightColor },
     "buttonBackground"
   );
 
@@ -92,9 +102,13 @@ export function Button(props: ButtonProps) {
       style={[{ borderColor, backgroundColor, flexDirection: "row" }, style]}
       {...otherProps}
     >
-      {icon && <Ionicons name={icon} size={24} color="white" />}
+      {icon && <Ionicons name={icon} size={24} color={iconColor} />}
       {!!text && (
-        <Text darkColor="#fff" lightColor="#fff" style={{ marginLeft: 10 }}>
+        <Text
+          darkColor="#fff"
+          lightColor="#fff"
+          style={[{ marginLeft: 10 }, textStyle]}
+        >
           {text}
         </Text>
       )}
@@ -105,7 +119,7 @@ export function Button(props: ButtonProps) {
 export function SafeAreaView(props: SafeAreaProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const backgroundColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
+    { light: lightColor, dark: lightColor },
     "background"
   );
 

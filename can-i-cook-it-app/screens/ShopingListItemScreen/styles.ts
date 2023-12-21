@@ -26,5 +26,6 @@ export const ShoppingListItemStyles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: "#E99497",
     borderRadius: 20,
+    alignItems: "center",
   },
 });

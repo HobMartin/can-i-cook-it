@@ -1,118 +1,50 @@
-import { useStore } from "effector-react";
-import { useEffect, useState } from "react";
-import { Text, SafeAreaView, View, TextInput } from "../../components/Themed";
-import { FlatList, Image, TouchableOpacity, ScrollView } from "react-native";
-import { $receipts, fxLoadReceipts } from "./model";
-import { receiptScreenStyles } from "./styles";
-import { ReceiptCard } from "../../components/ReceiptCard";
+import React, { useEffect, useState } from "react";
+import { useWindowDimensions } from "react-native";
+import { fxLoadReceipts } from "./model";
 import { useDebounce } from "../../hooks/useDebounce";
-import Colors from "../../constants/Colors";
-import { Favorite_IL, Search_IL } from "../../assets/illustration";
-import { $favoritesReceipts, fxGetFavorites } from "../../state/favorites";
-import { $user } from "../../state/user";
+import { fxGetFavorites } from "../../state/favorites";
 import _ from "lodash";
-import { storeRecentReceipts } from "./helper";
+import { TabView, SceneMap, TabBar } from "react-native-tab-view";
+import { AllReceipts } from "./AllRecipes";
+import { FavoriteReceipts } from "./FavoritesRecipes";
+import { OwnReceipts } from "./OwnReceipts";
+import { useLocalSearchParams } from "expo-router";
 
-export default function ReceiptsScreen({ route, navigation }: any) {
-  const name = route?.params?.name;
-  const receipts = useStore($receipts);
-  const currentUser = useStore($user);
-  const [search, setSearch] = useState(name ?? "");
-  const searchValue = useDebounce<string>(search, 500);
-  const favorites = useStore($favoritesReceipts);
+const renderTabBar = (props: any) => (
+  <TabBar
+    {...props}
+    indicatorStyle={{ backgroundColor: "black" }}
+    style={{ backgroundColor: "white", marginBottom: 10 }}
+    inactiveColor="gray"
+    activeColor="black"
+  />
+);
 
-  useEffect(() => {
-    if (name) {
-      setSearch(name);
-    }
-  }, [name]);
+const renderScene = SceneMap({
+  all: AllReceipts,
+  favorites: FavoriteReceipts,
+  own: OwnReceipts,
+});
 
-  useEffect(() => {
-    fxLoadReceipts({ query: searchValue });
-    fxGetFavorites(currentUser);
-  }, [searchValue]);
+export default function ReceiptsScreen() {
+  const { activeTab } = useLocalSearchParams<{ activeTab: string }>();
+  const layout = useWindowDimensions();
 
-  const onReceiptClick = async (item: any) => {
-    await storeRecentReceipts(item);
-    navigation.navigate("Receipt", { receiptId: item.id ?? item.receipt });
-  };
-
-  const renderItem = ({ item }: any) => {
-    return (
-      <TouchableOpacity onPress={() => onReceiptClick(item)}>
-        <ReceiptCard title={item?.title} image={item?.image} />
-      </TouchableOpacity>
-    );
-  };
+  const [index, setIndex] = useState(activeTab ? +activeTab : 2);
+  const [routes] = useState([
+    { key: "all", title: "Всі" },
+    { key: "favorites", title: "Улюблені" },
+    { key: "own", title: "Власні" },
+  ]);
 
   return (
-    <ScrollView>
-      <SafeAreaView style={receiptScreenStyles.container}>
-        <Text style={receiptScreenStyles.title}>Рецепти</Text>
-        <TextInput
-          style={receiptScreenStyles.search}
-          value={search}
-          placeholderTextColor={Colors.dark.text}
-          placeholder="Пошук"
-          onChangeText={(value) => setSearch(value)}
-        />
-        {receipts.length <= 0 ? (
-          <View>
-            <Image
-              source={Search_IL}
-              style={{ height: 350, width: "100%", resizeMode: "cover" }}
-            />
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: "bold",
-                textAlign: "center",
-                color: "#ccc",
-              }}
-            >
-              Почніть пошук
-            </Text>
-          </View>
-        ) : (
-          <FlatList
-            style={receiptScreenStyles.receiptList}
-            horizontal={true}
-            data={receipts}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        )}
-
-        <View style={receiptScreenStyles.favoriteContainer}>
-          <Text style={receiptScreenStyles.title}>Улюблені рецепти</Text>
-          {favorites.length ? (
-            <FlatList
-              style={receiptScreenStyles.receiptList}
-              horizontal={true}
-              data={favorites}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
-            />
-          ) : (
-            <View>
-              <Image
-                source={Favorite_IL}
-                style={{ height: 350, width: "100%", resizeMode: "cover" }}
-              />
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  color: "#ccc",
-                }}
-              >
-                Додайте щось до улюблених
-              </Text>
-            </View>
-          )}
-        </View>
-      </SafeAreaView>
-    </ScrollView>
+    <TabView
+      style={{ backgroundColor: "#fff" }}
+      navigationState={{ index, routes }}
+      renderTabBar={renderTabBar}
+      renderScene={renderScene}
+      onIndexChange={setIndex}
+      initialLayout={{ width: layout.width }}
+    />
   );
 }

@@ -2,15 +2,22 @@ import { StyleSheet } from "react-native";
 import Colors from "../../constants/Colors";
 
 export const receiptScreenStyles = StyleSheet.create({
-  container: {
+  scrollContainer: {
     flex: 1,
-    paddingTop: 50,
     paddingHorizontal: 20,
+    paddingTop: 20,
+    gap: 20,
+    backgroundColor: Colors.light.background,
   },
   favoriteContainer: {
     flex: 1,
-    paddingTop: 20,
-    paddingBottom: 20,
+    paddingHorizontal: 20,
+  },
+  receiptContainer: {
+    flex: 1,
+    borderRadius: 10,
+    width: "100%",
+    padding: 10,
   },
   title: {
     fontSize: 20,
@@ -25,7 +32,7 @@ export const receiptScreenStyles = StyleSheet.create({
     marginBottom: 20,
   },
   receiptList: {
-    flexDirection: "row",
-    height: 275,
+    flexDirection: "column",
+    height: 575,
   },
 });

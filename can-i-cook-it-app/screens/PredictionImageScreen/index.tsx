@@ -1,7 +1,12 @@
 import { View, Text, TextInput, Button } from "../../components/Themed";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Image, TouchableOpacity } from "react-native";
-import { useStore } from "effector-react";
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
+import { useUnit } from "effector-react";
 import { $image } from "../PredictScreen/model";
 import { $predictionResult, fxPredictFoodImage, resetImage } from "./model";
 import { predictImageScreenStyles } from "./styles";
@@ -9,13 +14,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { setDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { StackActions } from "@react-navigation/native";
+import { router } from "expo-router";
 
 export default function PredictionImageScreen({ navigation }: any) {
   const [incorrectForm, setIncorrectForm] = useState(false);
   const [foodName, setFoodName] = useState("");
-  const image = useStore($image);
-  const predictionResult = useStore($predictionResult);
-  const loading = useStore(fxPredictFoodImage.pending);
+  const image = useUnit($image);
+  const predictionResult = useUnit($predictionResult);
+  const loading = useUnit(fxPredictFoodImage.pending);
 
   useEffect(() => {
     fxPredictFoodImage(image);
@@ -25,22 +31,21 @@ export default function PredictionImageScreen({ navigation }: any) {
   }, []);
 
   const handleCorrectAnswer = () => {
-    const docRef = doc(
-      db,
-      predictionResult.food_name,
-      `correct-${new Date().toISOString()}`
-    );
-    setDoc(docRef, {
-      image,
-    }).then(() => {
-      navigation.dispatch(StackActions.pop(1));
-      navigation.navigate("ReceiptsScreens", {
-        screen: "Receipts",
-        params: {
-          name: predictionResult.food_name,
-        },
-      });
+    console.log(predictionResult.food_name);
+
+    router.replace({
+      pathname: "/receipt",
+      params: {
+        search: predictionResult.food_name,
+      },
     });
+    // navigation.dispatch(StackActions.pop(1));
+    // navigation.navigate("ReceiptsScreens", {
+    //   screen: "Receipts",
+    //   params: {
+    //     name: predictionResult,
+    //   },
+    // });
   };
 
   const handleIncorrectAnswer = () => {
@@ -78,12 +83,25 @@ export default function PredictionImageScreen({ navigation }: any) {
         source={{ uri: image }}
         style={{ height: 350, width: "100%", resizeMode: "stretch" }}
       />
-      <Text style={predictImageScreenStyles.result}>
-        {predictionResult.food_name}
-      </Text>
-      <Text style={predictImageScreenStyles.result}>
-        Точність {predictionResult.model_score} %
-      </Text>
+      {/* 
+        {predictionResult.map((el) => (
+          <Pressable
+            key={el.food_name}
+            style={{ padding: 10, marginBottom: 10 }}
+          >
+   
+          </Pressable>
+        ))}
+       */}
+      <View
+        style={{
+          marginVertical: 10,
+        }}
+      >
+        <Text style={predictImageScreenStyles.result}>
+          {predictionResult.food_name} - {predictionResult.model_score}
+        </Text>
+      </View>
       {incorrectForm ? (
         <View style={predictImageScreenStyles.foodNameForm}>
           <TextInput

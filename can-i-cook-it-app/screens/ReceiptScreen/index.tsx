@@ -1,130 +1,151 @@
-import { useStore } from "effector-react";
-import { useEffect } from "react";
-import {
-  Text,
-  View,
-  SafeAreaView,
-  useThemeColor,
-  Button,
-} from "../../components/Themed";
+import { useUnit } from "effector-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Text, View, useThemeColor, Button } from "../../components/Themed";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   ImageBackground,
+  Platform,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
 import { $receipt, fxLoadReceipt } from "./model";
 import { receiptScreenStyles } from "./styles";
+import { receiptScreenStyles as receiptsScreenStyles } from "../ReceiptsScreen/styles";
 import Colors from "../../constants/Colors";
-import { buildImageUrl, capitalizeFirstLetter } from "./helper";
 import { Ionicons } from "@expo/vector-icons";
-import { openBrowserAsync } from "expo-web-browser";
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  setDoc,
-  Timestamp,
-} from "firebase/firestore";
-import { db } from "../../firebase";
 import { $user } from "../../state/user";
 import {
   $favoritesReceipts,
-  removeFromFavorites,
-  updateFavoritesReceipt,
+  fxAddToFavorites,
+  fxRemoveFromFavorites,
 } from "../../state/favorites";
-import dayjs from "dayjs";
+import { StatusBar } from "expo-status-bar";
+import { router, useFocusEffect } from "expo-router";
+import {
+  fxCreateShoppingList,
+  selectShoppingList,
+} from "../../state/shoppingList";
+import { Ingredients } from "./Ingradients";
+import { Steps } from "./Steps";
+import { Rating } from "../../components/Rating";
+import { getTimeToCook } from "../../components/TimeToCook/utils";
+import { $rating, fxGetRating, fxRating } from "../../state/rating";
+import { getAVGRating } from "../../utils/getAVGRating";
+import { getRecipeRecommendations } from "../../api/predictPhoto";
+import { Avatar } from "react-native-rapi-ui";
+import { ReceiptCard } from "../../components/ReceiptCard";
+import { openReceiptPage } from "../../utils/openReceiptPage";
 
-export default function ReceiptScreen({ route, navigation }: any) {
-  const { receiptId } = route.params;
+type Props = {
+  receiptId: string;
+};
+
+export default function ReceiptScreen({ receiptId }: Props) {
   const color = useThemeColor({}, "text");
-  const currentUser = useStore($user);
-  const receipt = useStore($receipt);
-  const loading = useStore(fxLoadReceipt.pending);
-  const favorites = useStore($favoritesReceipts);
+  const currentUser = useUnit($user);
+  const receipt = useUnit($receipt);
+  const loading = useUnit(fxLoadReceipt.pending);
+  const favorites = useUnit($favoritesReceipts);
+  const rating = useUnit($rating);
+  // const recommendation = useUnit($recommendedRecipes);
+  const [recommendation, setRecommendation] = useState<any>([]);
+  console.log({ rating });
 
-  useEffect(() => {
+  const loadRecipe = useCallback(() => {
+    console.log(receiptId);
+
     fxLoadReceipt({ id: receiptId });
-  }, []);
+    fxGetRating({ receiptId }).then(async (data) => {
+      if (data) {
+        const data = await getRecipeRecommendations(currentUser.id, receiptId);
 
-  const sourceOpen = () => {
-    openBrowserAsync(receipt.sourceUrl);
-  };
+        console.log(data);
 
-  const icon: any = () => {
-    return favorites.some((el: any) => el?.receipt === receiptId)
-      ? "star"
-      : "star-outline";
-  };
+        setRecommendation(data);
+      }
+    });
+  }, [receiptId]);
+
+  useFocusEffect(loadRecipe);
+
+  const icon: any = useMemo(() => {
+    return favorites.some((el) => el.receiptid === receiptId)
+      ? "heart"
+      : "heart-outline";
+  }, [favorites]);
+
+  const avgRating = useMemo(() => {
+    return getAVGRating(receipt.rating_receipt);
+  }, [receipt.rating_receipt]);
+
+  const ratingIcon: any = useMemo(() => {
+    if (avgRating > 4) return "star";
+    if (avgRating > 3) return "star-half";
+    return "star-outline";
+  }, [avgRating]);
 
   const onFavoriteClick = async () => {
-    const currentDoc = favorites.find((f) => f.receipt === receiptId);
+    const currentFav = favorites.find((f) => f.receiptid === receiptId);
 
-    if (icon() === "star" && currentDoc?.doc) {
-      await deleteDoc(doc(db, "cities", currentDoc?.doc));
-      removeFromFavorites(receiptId);
+    if (icon === "heart" && currentFav?.receiptid) {
+      await fxRemoveFromFavorites(currentFav.uuid);
       return;
     }
 
-    const docRef = await addDoc(
-      collection(db, currentUser.email ?? currentUser.uid),
-      {
-        receiptId: receiptId,
-        name: receipt.title,
-        image: receipt.image,
-      }
-    );
-    updateFavoritesReceipt({
-      receipt: receiptId,
-      doc: docRef.id,
+    await fxAddToFavorites({
       image: receipt.image,
-      title: receipt.title,
+      name: receipt.receipt_name,
+      receiptid: receiptId,
     });
   };
 
   const handleCreateList = async () => {
-    const list = receipt.extendedIngredients.map((ingredient: any) => ({
-      name: capitalizeFirstLetter(ingredient.name),
-      amount: `${ingredient.amount} ${ingredient.unit}`,
-      done: false,
-    }));
-
-    const docRef = await doc(collection(db, "ShoppingLists"));
-
-    setDoc(docRef, {
-      name: receipt.title,
-      list,
-      userId: currentUser.uid,
-      notify: Timestamp.fromDate(
-        dayjs()
-          .add(1, "day")
-          .set("hour", 13)
-          .set("minute", 0)
-          .set("second", 0)
-          .toDate()
-      ),
-    }).then(() => {
-      navigation.navigate("ShopsScreens");
+    const list = await fxCreateShoppingList({
+      user: currentUser,
+      receipt,
     });
+    console.log(list);
+
+    if (!list) return;
+
+    selectShoppingList(list);
+    router.push(`/list`);
   };
 
+  const handleRating = async (value: number) => {
+    console.log(receipt.rating_receipt);
+    await fxRating({ receiptId, value });
+    const data = await getRecipeRecommendations(currentUser.id, receiptId);
+
+    console.log(data);
+
+    setRecommendation(data);
+  };
+  const timeToCookText = useMemo(
+    () => getTimeToCook(+receipt.time_to_cook).text,
+    [receipt.time_to_cook]
+  );
+
   const renderItem = ({ item }: any) => {
+    console.log(item);
+
     return (
-      <View style={receiptScreenStyles.ingredient}>
-        <Image
-          source={{ uri: buildImageUrl(item.image) }}
-          style={{ height: 105, width: 105, borderRadius: 10 }}
+      <TouchableOpacity
+        activeOpacity={0}
+        onPress={() => {
+          openReceiptPage(item.receiptid);
+        }}
+      >
+        <ReceiptCard
+          title={item?.receipt_name}
+          image={item?.image}
+          containerStyle={[
+            receiptsScreenStyles.receiptContainer,
+            { width: 300 },
+          ]}
         />
-        <View style={receiptScreenStyles.ingredientInfo}>
-          <Text style={receiptScreenStyles.ingredientTitle}>
-            {capitalizeFirstLetter(item.name)}
-          </Text>
-          <Text style={receiptScreenStyles.ingredientText}>{item.text}</Text>
-        </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -137,7 +158,7 @@ export default function ReceiptScreen({ route, navigation }: any) {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <ScrollView>
         <ImageBackground
           resizeMode="cover"
@@ -145,14 +166,37 @@ export default function ReceiptScreen({ route, navigation }: any) {
           source={{ uri: receipt.image }}
         >
           <View style={receiptScreenStyles.container}>
-            <Text style={receiptScreenStyles.title}>{receipt.title}</Text>
+            <View style={receiptScreenStyles.titleContainer}>
+              <Text style={receiptScreenStyles.title}>
+                {receipt.receipt_name}
+              </Text>
+            </View>
             <View style={receiptScreenStyles.favorite}>
               <TouchableOpacity onPress={onFavoriteClick}>
-                <Ionicons name={icon()} size={32} color="white" />
+                <Ionicons name={icon} size={32} color="white" />
               </TouchableOpacity>
             </View>
           </View>
         </ImageBackground>
+        <View style={receiptScreenStyles.rating}>
+          <Avatar
+            size="md"
+            source={{
+              uri:
+                currentUser.user_metadata?.avatar_url ??
+                "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png",
+            }}
+          />
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: "bold",
+              marginLeft: 10,
+            }}
+          >
+            {currentUser.user_metadata?.full_name}
+          </Text>
+        </View>
         <View style={receiptScreenStyles.receiptInfo}>
           <View style={receiptScreenStyles.timeContainer}>
             <Ionicons
@@ -161,29 +205,39 @@ export default function ReceiptScreen({ route, navigation }: any) {
               size={24}
               color={color}
             />
-            <Text>{receipt.readyInMinutes} хвилин</Text>
+            <Text>{timeToCookText.trim() || receipt.time_to_cook}</Text>
           </View>
-          {/* <TouchableOpacity
-            onPress={sourceOpen}
-            style={receiptScreenStyles.urlSource}
-          >
-            <Text>Кроки</Text>
-          </TouchableOpacity> */}
-        </View>
-        <FlatList
-          data={receipt.extendedIngredients}
-          horizontal={true}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => item.id + index}
-        />
-        <View style={receiptScreenStyles.listButtonCreate}>
           <Button
             onPress={handleCreateList}
             style={receiptScreenStyles.createListButton}
+            textStyle={receiptScreenStyles.createListButtonText}
             text="Створити список покупок"
           />
         </View>
+
+        <Ingredients ingredients={receipt.ingredient} />
+        <Steps steps={receipt.step} />
+        <View style={{ height: 50 }} />
+        {recommendation?.length > 0 && (
+          <View style={receiptScreenStyles.recommendationContainer}>
+            <Text style={receiptScreenStyles.recommendationTitle}>
+              Рекомендації
+            </Text>
+            <FlatList
+              style={[
+                receiptsScreenStyles.receiptList,
+                { flexDirection: "row" },
+              ]}
+              data={recommendation}
+              horizontal
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </View>
+        )}
+        <Rating rating={rating} onRatingChange={handleRating} />
       </ScrollView>
-    </SafeAreaView>
+      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
+    </View>
   );
 }

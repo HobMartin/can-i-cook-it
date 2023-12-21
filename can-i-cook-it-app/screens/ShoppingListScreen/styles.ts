@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 export const shoppingListScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
+    paddingTop: 60,
     alignItems: "center",
   },
   pageTitle: {
@@ -30,6 +30,7 @@ export const shoppingListScreenStyles = StyleSheet.create({
   },
   listItemContainer: {
     flex: 1,
+    width: "100%",
     paddingHorizontal: 10,
   },
 });

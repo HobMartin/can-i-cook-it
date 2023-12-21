@@ -7,7 +7,7 @@ import {
 } from "../../components/Themed";
 import React, { useState } from "react";
 import { profileScreenStyles } from "./styles";
-import { useStore } from "effector-react";
+import { useUnit } from "effector-react";
 import { $user, updateUser } from "../../state/user";
 import { Image, TouchableOpacity } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
@@ -15,29 +15,33 @@ import { signOut, updatePassword, updateProfile } from "firebase/auth";
 import { auth } from "../../firebase";
 import { ProfileEditForm } from "../../components/ProfileEditForm";
 import { UserPhotoUpload } from "../../components/ProfileEditForm/UserPhotoUpload";
+import { router } from "expo-router";
+import { supabase } from "../../initSupabase";
 
 export default function ProfileScreen({ navigation }: any) {
-  const currentUser = useStore($user);
+  const currentUser = useUnit($user);
   const [editing, setEditing] = useState(false);
   const color = useThemeColor({}, "text");
   const userOverviewColor = useThemeColor({}, "buttonBackground");
 
-  const logout = () => {
-    signOut(auth).then(() => navigation.navigate("Auth"));
+  const logout = async () => {
+    console.log("logout");
+    await supabase.auth.signOut();
+    router.replace("/login");
   };
 
-  const handleProfileEdit = (value: any) => {
-    const user = auth.currentUser;
+  const handleProfileEdit = async (value: any) => {
+    const user = await supabase.auth.getUser();
     if (user) {
       if (value.displayName.trim().length) {
-        updateProfile(user, {
-          displayName: value.displayName,
-        }).then(() => {
-          updateUser({ ...currentUser, displayName: value.displayName.trim() });
+        await supabase.auth.updateUser({
+          data: { full_name: value.displayName.trim() },
         });
       }
       if (value.password.trim().length) {
-        updatePassword(user, value.password.trim());
+        await supabase.auth.updateUser({
+          password: value.password.trim(),
+        });
       }
     }
     setEditing(false);
@@ -64,7 +68,7 @@ export default function ProfileScreen({ navigation }: any) {
         <UserPhotoUpload />
         <View style={profileScreenStyles.userInfo}>
           <Text style={profileScreenStyles.userInfoName}>
-            {currentUser.displayName ?? ""}
+            {currentUser.user_metadata?.full_name ?? ""}
           </Text>
           <Text style={profileScreenStyles.userInfoEmail}>
             {currentUser.email}

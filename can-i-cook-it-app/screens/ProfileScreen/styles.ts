@@ -3,7 +3,6 @@ import Colors from "../../constants/Colors";
 export const profileScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
     paddingHorizontal: 20,
   },
   header: {
@@ -17,7 +16,6 @@ export const profileScreenStyles = StyleSheet.create({
   },
   userOverview: {
     height: 100,
-    width: "100%",
     padding: 10,
     borderRadius: 20,
     flexDirection: "row",

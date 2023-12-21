@@ -1,37 +1,40 @@
-import { View, Text } from "../../components/Themed";
-import React, { FC } from "react";
-import { useStore } from "effector-react";
-import { $user } from "../../state/user";
-import { $shoppingList, fxLoadShoppingList } from "../../state/shoppingList";
-import { FlatList, TouchableOpacity } from "react-native";
+import { View } from "../../components/Themed";
+import React, { useCallback } from "react";
+import { useUnit } from "effector-react";
+import {
+  $shoppingList,
+  ShoppingList as TShoppingList,
+  fxLoadShoppingList,
+  selectShoppingList,
+} from "../../state/shoppingList";
+import { FlatList, ListRenderItem, Pressable } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { ShoppingListItem } from "../../components/ShopingListItem";
+import { router } from "expo-router";
 
-interface ShoppingListProps {
-  navigation: any;
-}
+export const ShoppingList = () => {
+  const shoppingList = useUnit($shoppingList);
 
-export const ShoppingList: FC<ShoppingListProps> = ({ navigation }) => {
-  const currentUser = useStore($user);
-  const shoppingList = useStore($shoppingList);
+  const loadShoppingList = useCallback(() => {
+    fxLoadShoppingList();
+  }, []);
 
-  useFocusEffect(() => {
-    fxLoadShoppingList(currentUser);
-  });
+  useFocusEffect(loadShoppingList);
 
-  const handleItemPress = (item: any) => {
-    navigation.navigate("ShoppingList", { item });
+  const handleItemPress = (item: TShoppingList) => {
+    selectShoppingList(item);
+    router.push(`/list-view`);
   };
 
-  const renderItem = ({ item }: any) => {
+  const renderItem: ListRenderItem<TShoppingList> = ({ item }) => {
     return (
-      <View>
-        <TouchableOpacity onPress={() => handleItemPress(item)}>
+      <View style={{ width: "100%" }} key={item.id}>
+        <Pressable onPress={() => handleItemPress(item)}>
           <ShoppingListItem
             name={item.name}
-            isDone={item.list.every((el: any) => el.done)}
+            isDone={item.list.every((el) => el.done)}
           />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     );
   };

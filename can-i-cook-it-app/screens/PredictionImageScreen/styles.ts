@@ -6,9 +6,8 @@ export const predictImageScreenStyles = StyleSheet.create({
     alignItems: "center",
   },
   result: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: "bold",
-    marginTop: 20,
   },
   questionContainer: {
     marginTop: 50,

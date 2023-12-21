@@ -29,9 +29,13 @@ export const ShoppingListItemList: FC<ShoppingListItemListProps> = ({
       await fxUpdateShoppingListItem({
         id,
         data: {
-          list: itemList.map((el) =>
-            el.name === item.name ? { ...el, done: value } : el
-          ),
+          item: {
+            ...item,
+            done: value,
+          },
+          // list: itemList.map((el) =>
+          //   el.name === item.name ? { ...el, done: value } : el
+          // ),
         },
       });
     };

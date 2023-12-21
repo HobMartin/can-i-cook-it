@@ -94,7 +94,7 @@ function BottomTabNavigator() {
         tabBarLabelStyle: {
           color: Colors[colorScheme].text,
         },
-        tabBarStyle: { height: 65, paddingTop: 10, paddingBottom: 10 },
+        tabBarStyle: { height: 80, paddingTop: 5, paddingBottom: 25 },
         headerTitleAlign: "center",
         headerShown: false,
       }}

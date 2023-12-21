@@ -1,34 +1,12 @@
 import { createEffect, createEvent, createStore } from "effector";
-import { getSpoonReceipt } from "../../api/receipts";
-import { t } from "../../hooks/useTranslate";
+import { getReceipt, getRecipe, getSpoonReceipt } from "../../api/receipts";
+import { Receipt } from "../../api/types";
 
-export const $receipt = createStore<any>({});
+export const $receipt = createStore<Receipt>({} as Receipt);
 export const fxLoadReceipt = createEffect<{ id: string }, any>();
 $receipt.on(fxLoadReceipt.doneData, (_, payload) => payload);
 
-fxLoadReceipt.use(async (params) => {
-  const result = await getSpoonReceipt(params.id);
-
-  const extendedIngredients = await Promise.all(
-    result.extendedIngredients.map(async (el: any) => {
-      return {
-        id: el.id,
-        name: await t(el.name),
-        amount: el.amount,
-        image: el.image,
-        unit: await t(el.measures?.metric?.unitLong),
-        text: await t(el.original),
-      };
-    })
-  );
-  const receiptData = {
-    id: result.id,
-    title: await t(result.title),
-    image: result.image,
-    readyInMinutes: result.readyInMinutes,
-    calories: result.calories,
-    sourceUrl: result.sourceUrl,
-    extendedIngredients: extendedIngredients,
-  };
-  return receiptData;
+fxLoadReceipt.use(async ({ id }) => {
+  const data = await getRecipe(id);
+  return data;
 });
