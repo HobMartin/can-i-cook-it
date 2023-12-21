@@ -1,8 +1,10 @@
-SUPABASE_URL = "https://fzmcsddtbvxyfwyvdywb.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6bWNzZGR0YnZ4eWZ3eXZkeXdiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwMTg5NTY2OCwiZXhwIjoyMDE3NDcxNjY4fQ.cKQcdkCfmgqcV7VKYeAa_tq2F9jYxmImvjz5moNKxTA"
 
 from supabase import create_client, Client
 import csv
+import os
+
+SUPABASE_URL = os.environ["SUPABASE_URL"]
+SUPABASE_KEY = os.environ["SUPABASE_KEY"]
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
